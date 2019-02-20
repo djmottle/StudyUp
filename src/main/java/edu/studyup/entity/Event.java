@@ -46,7 +46,7 @@ public class Event {
 	}
 
 	public Date getDate() {
-		return date;
+		return date == null ? null : (Date) date.clone();
 	}
 
 	public void setDate(Date date) {
