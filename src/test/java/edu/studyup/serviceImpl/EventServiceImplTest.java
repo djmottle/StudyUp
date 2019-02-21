@@ -2,6 +2,7 @@ package edu.studyup.serviceImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +21,7 @@ import edu.studyup.entity.Student;
 import edu.studyup.util.DataStorage;
 import edu.studyup.util.StudyUpException;
 
-class EventServiceImplTest {
+class EventServiceImplTest{
 
 	EventServiceImpl eventServiceImpl;
 
@@ -66,17 +67,35 @@ class EventServiceImplTest {
 		int eventID = 1;
 		assertEquals("This has exactly 20." ,eventServiceImpl.updateEventName(eventID, "This has exactly 20.").getName());
 	}
-	
-	
+
 	@Test
-	void testUpdateEvent_nameTooLong_badCase() throws StudyUpException {
+	void testUpdateEventName_LessThan20_goodCase() throws StudyUpException {
+		int eventID = 1;
+		eventServiceImpl.updateEventName(eventID, "Event name");
+		assertEquals("Event name", DataStorage.eventData.get(eventID).getName());
+  }
+	
+  @Test
+  void testDeleteEvent_goodCase() throws StudyUpException {
+		int eventID = 1;
+		eventServiceImpl.deleteEvent(1);
+		assertEquals(null , DataStorage.eventData.get(eventID));
+	}
+    
+	@Test
+	void testUpdateEvent_WrongEventID_badCase() {
+		int eventID = 3;
+		Assertions.assertThrows(StudyUpException.class, () -> {
+			eventServiceImpl.updateEventName(eventID, "Renamed Event 3");
+  }
+	
+   void testUpdateEvent_nameTooLong_badCase() throws StudyUpException {
 		int eventID = 1;
 		Assertions.assertThrows(StudyUpException.class, () -> {
 			eventServiceImpl.updateEventName(eventID, "Wow this is a really long name, it should probably be shorter than this.");
 		  });
 	}
 	
-	//
 	@Test
 	void testUpdateEventName_LessThan20_goodCase() throws StudyUpException {
 		int eventID = 1;
@@ -102,7 +121,6 @@ class EventServiceImplTest {
 		List<Event> activeEvents = eventServiceImpl.getActiveEvents();
 		assertTrue(activeEvents.isEmpty());
 	}
-
 	
 	@Test
 	//Sets the date of the only event to a future date and checks if active events returns the event.
@@ -141,8 +159,9 @@ class EventServiceImplTest {
 		expectedEvents.add(DataStorage.eventData.get(eventID));
 		List<Event> futureEvents = eventServiceImpl.getPastEvents();
 		assertTrue(futureEvents.isEmpty());
-	}		
-	@Test
+	}
+	
+      @Test
 	void testAddStudentToEvent_nullEvent_badCase() {
 		int eventID = 3; //Event does not exist in DataStorage
 		Student studentToAdd = new Student();
@@ -187,6 +206,7 @@ class EventServiceImplTest {
 		  });
 	}
 	
+
 	@Test
 	//Sets the date of the only event to a future date and checks if past events returns the event.
 	void testDeleteEvent() {
@@ -198,5 +218,5 @@ class EventServiceImplTest {
 		expectedEvents.add(DataStorage.eventData.get(eventID));
 		Event deletedEvent = eventServiceImpl.deleteEvent(eventID);
 		assertEquals(expectedEvents, deletedEvent);
-	}
+  }
 }
